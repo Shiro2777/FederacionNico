@@ -1,13 +1,23 @@
 package entidades;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Scanner;
 
+import entidades.ComparadorAlfabetico;
+import utils.Datos;
 import utils.Utilidades;
 import validaciones.Validaciones;
 
-public class DatosPersona {
+public class DatosPersona implements Comparable<DatosPersona> {
 	private long id;
 	private String nombre;
 	private String telefono;
@@ -78,6 +88,65 @@ public class DatosPersona {
 		return nombre + " NIF/NIE: " + nifnie.mostrar() + " Tfn:" + telefono + " ("
 				+ fechaNac.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ")";
 	}
+	
+	public String data() {
+		return "" + this.getId() + "|" + this.getNombre() + "|" + this.getTelefono() + "|"
+				+ this.getFechaNac().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "|" + this.getNifnie().mostrar();
+	}
+	
+	private static void exportar(DatosPersona[] personas) {
+		String path = "atletas_alfabetico.txt";
+		File fichero = new File(path);
+		FileWriter escritor = null;
+		PrintWriter buffer = null;
+		
+		try {
+			try {
+				escritor = new FileWriter(fichero, false);
+				buffer = new PrintWriter(escritor);
+				for (DatosPersona dt : personas) {
+					buffer.println(dt.data());
+				}
+			} finally {
+				if (buffer != null) {
+					buffer.close();
+				}
+				if (escritor != null) {
+					escritor.close();
+				}
+			}
+		} catch (FileNotFoundException e) {
+			System.out.println("Se ha producido una FileNotFoundException" + e.getMessage());
+		} catch (IOException e) {
+			System.out.println("Se ha producido una IOException" + e.getMessage());
+		} catch (Exception e) {
+			System.out.println("Se ha producido una Exception" + e.getMessage());
+		}
+	}
+	
+	public int compareTo(DatosPersona o1, DatosPersona o2) {
+		if (o1.getFechaNac().compareTo(o2.getFechaNac())==0) 
+			return o1.getNifnie().compareTo(nifnie);
+		else
+			return o1.getFechaNac().compareTo(o2.getFechaNac());
+	}
+	
+	public static void insertarPersonas() {
+		LinkedList<DatosPersona> ret = new LinkedList<DatosPersona>();
+		
+		for (DatosPersona dt : Datos.PERSONAS) {
+			ret.add(dt);
+		}
+		Collections.sort(ret, new ComparadorAlfabetico());
+		System.out.println("La lista ordenada de personas es:");
+		Iterator<DatosPersona> it = ret.iterator();
+		int i = 1;
+		while (it.hasNext()) {
+			System.out.println(i + ": " + ((DatosPersona)it.next()).toString() + " ");
+			//falta añadir insertar en la base de datos
+			i++;
+		}
+	}
 
 	// Examen 2 Ejercicio 3.3
 	// Examen 5 Ejercicio 3
@@ -132,6 +201,12 @@ public class DatosPersona {
 		} while (!valido);
 		ret = new DatosPersona(id, nombre, tfn, fecha, doc);
 		return ret;
+	}
+
+	@Override
+	public int compareTo(DatosPersona o) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }
