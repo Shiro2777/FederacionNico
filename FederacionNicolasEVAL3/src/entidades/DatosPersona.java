@@ -5,14 +5,19 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
 
 import entidades.ComparadorAlfabetico;
+import utils.ConexBD;
 import utils.Datos;
 import utils.Utilidades;
 import validaciones.Validaciones;
@@ -90,62 +95,95 @@ public class DatosPersona implements Comparable<DatosPersona> {
 	}
 	
 	public String data() {
-		return "" + this.getId() + "|" + this.getNombre() + "|" + this.getTelefono() + "|"
-				+ this.getFechaNac().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + "|" + this.getNifnie().mostrar();
+		String ret = "";
+		ret += "" + this.getId() + "|" + this.getNombre() + "|" + this.getTelefono() + "|"
+				+ this.getFechaNac().format(DateTimeFormatter.ofPattern("dd/MM/YYYY")) + "|"
+				+ this.getNifnie().mostrar();
+		return ret;
 	}
 	
-	private static void exportar(DatosPersona[] personas) {
-		String path = "atletas_alfabetico.txt";
-		File fichero = new File(path);
-		FileWriter escritor = null;
-		PrintWriter buffer = null;
-		
+	public static void exportarAtletasAlfabetico() {
+		File f = new File("atletas_alfabetico.txt");
+		FileWriter fo = null;
+		/// Utilizamos una lista para tomar primeramente los datos desde la clase
+		/// Datos.java
+		List<DatosPersona> personas = new LinkedList<DatosPersona>();
+		for (DatosPersona dp : Datos.PERSONAS) {
+			personas.add(dp);
+		}
+		/// Se ordena la lista según el ComparadorAlfabetico
+		Collections.sort(personas, new ComparadorAlfabetico());
 		try {
-			try {
-				escritor = new FileWriter(fichero, false);
-				buffer = new PrintWriter(escritor);
-				for (DatosPersona dt : personas) {
-					buffer.println(dt.data());
-				}
-			} finally {
-				if (buffer != null) {
-					buffer.close();
-				}
-				if (escritor != null) {
-					escritor.close();
-				}
+			fo = new FileWriter(f);
+			/// Se recorre cada elemento de la lista ya ordenada y se exporta hacia el
+			/// fichero de caracteres, una persona en cada línea y a través del método
+			/// DatosPersona.data
+			for (DatosPersona dp : personas) {
+				fo.write(dp.data() + "\n");
+				fo.flush();
 			}
+			fo.close();
+			System.out.println("Se han exportado correctamente los datos de las personas.");
 		} catch (FileNotFoundException e) {
-			System.out.println("Se ha producido una FileNotFoundException" + e.getMessage());
-		} catch (IOException e) {
-			System.out.println("Se ha producido una IOException" + e.getMessage());
+			System.out.println("Se ha producido una FileNotFoundException:" + e.getMessage());
+			e.printStackTrace();
 		} catch (Exception e) {
-			System.out.println("Se ha producido una Exception" + e.getMessage());
+			System.out.println("Se ha producido una Exception:" + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 	
-	public int compareTo(DatosPersona o1, DatosPersona o2) {
-		if (o1.getFechaNac().compareTo(o2.getFechaNac())==0) 
-			return o1.getNifnie().compareTo(nifnie);
+	@Override
+	public int compareTo(DatosPersona o2) {
+		// si la fecha_nac de this es posterior a la de o2, entonces this es menor (en
+		// edad) que o2
+		if (this.getFechaNac().isAfter(o2.getFechaNac()))
+			return -1;
 		else
-			return o1.getFechaNac().compareTo(o2.getFechaNac());
+		// si la fecha_nac de this es posterior a la de o2, entonces this es menor (en
+		// edad) que o2
+		if (this.getFechaNac().isBefore(o2.getFechaNac()))
+			return 1;
+		else {
+			// si la fecha_nac de this la misma de o2, entonces se desempata en funcion del
+			// campo Documentacion
+			return this.getNifnie().compareTo(o2.getNifnie());
+		}
+		/// Otra forma más sencilla sería esta:
+		//return this.getFechaNac().compareTo(o2.getFechaNac());
 	}
 	
-	public static void insertarPersonas() {
-		LinkedList<DatosPersona> ret = new LinkedList<DatosPersona>();
-		
-		for (DatosPersona dt : Datos.PERSONAS) {
-			ret.add(dt);
+	public static boolean insertarPersonas() {
+		boolean ret = false;
+		String consultaInsertStr1 = "insert into personas(id, nombre, telefono, fechanac, nifnie) values (?,?,?,?,?)";
+		try {
+			Connection conex = ConexBD.establecerConexion();
+			PreparedStatement pstmt = conex.prepareStatement(consultaInsertStr1);
+
+			List<DatosPersona> personas = new LinkedList<>();
+			for (DatosPersona dp : Datos.PERSONAS) {
+				personas.add(dp);
+			}
+			Collections.sort(personas);
+			Iterator<DatosPersona> it = personas.iterator();
+			while (it.hasNext()) {
+				DatosPersona dp = (DatosPersona) it.next();
+				pstmt.setLong(1, dp.getId());
+				pstmt.setString(2, dp.getNombre());
+				pstmt.setString(3, dp.getTelefono());
+				java.sql.Date fechaSQL = java.sql.Date.valueOf(dp.getFechaNac());
+				pstmt.setDate(4, fechaSQL);
+				pstmt.setString(5, dp.getNifnie().mostrar());
+				int resultadoInsercion = pstmt.executeUpdate();
+				ret = (resultadoInsercion != 0);
+			}
+		} catch (SQLException e) {
+			System.out.println("Se ha producido una SQLException:" + e.getMessage());
+			e.printStackTrace();
+			ret = false;
 		}
-		Collections.sort(ret, new ComparadorAlfabetico());
-		System.out.println("La lista ordenada de personas es:");
-		Iterator<DatosPersona> it = ret.iterator();
-		int i = 1;
-		while (it.hasNext()) {
-			System.out.println(i + ": " + ((DatosPersona)it.next()).toString() + " ");
-			//falta añadir insertar en la base de datos
-			i++;
-		}
+
+		return ret;
 	}
 
 	// Examen 2 Ejercicio 3.3
@@ -202,11 +240,4 @@ public class DatosPersona implements Comparable<DatosPersona> {
 		ret = new DatosPersona(id, nombre, tfn, fecha, doc);
 		return ret;
 	}
-
-	@Override
-	public int compareTo(DatosPersona o) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 }
