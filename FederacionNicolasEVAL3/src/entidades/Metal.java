@@ -8,6 +8,7 @@ public abstract class Metal {
 	public abstract float[] cotasPurezaEfectiva();
 	public abstract float getPureza(); ////Examen 8 Ejercicio 2
 	
+	public long idMetal;
 	public LocalDate fecha;
 	public boolean asignada = false;
 	
@@ -32,5 +33,10 @@ public abstract class Metal {
 	public void setAsignada(boolean asignada) {
 		this.asignada = asignada;
 	}
-	
+	public long getIdMetal() {
+		return idMetal;
+	}
+	public void setIdMetal(long idMetal) {
+		this.idMetal = idMetal;
+	}
 }
