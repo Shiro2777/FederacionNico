@@ -16,16 +16,18 @@ import java.util.LinkedList;
 
 import dao.AtletaDAO;
 import dao.ColegiadoDAO;
+import dao.MetalDAO;
 import dao.PatrocinadorDAO;
 import entidades.*;
 import utils.ConexBD;
 import utils.Datos;
 import utils.Utilidades;
 
-
+//examen
 public class PrincipalExam10 {
 
 	public static void main(String[] args) {
+		MetalDAO mDAO;
 		AtletaDAO aDAO;
 		ColegiadoDAO colegDAO;
 		PatrocinadorDAO pDAO;
