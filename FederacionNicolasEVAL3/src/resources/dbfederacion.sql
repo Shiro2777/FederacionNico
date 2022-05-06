@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 30-03-2022 a las 21:11:54
+-- Tiempo de generación: 04-05-2022 a las 21:01:05
 -- Versión del servidor: 10.4.22-MariaDB
 -- Versión de PHP: 8.1.2
 
@@ -30,12 +30,10 @@ USE `dbfederacion`;
 --
 
 DROP TABLE IF EXISTS `categorias`;
-CREATE TABLE IF NOT EXISTS `categorias` (
+CREATE TABLE `categorias` (
   `id` int(11) NOT NULL,
   `nombre` varchar(50) NOT NULL,
-  `abreviatura` char(1) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `abreviatura` (`abreviatura`)
+  `abreviatura` char(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -54,12 +52,11 @@ INSERT INTO `categorias` (`id`, `nombre`, `abreviatura`) VALUES
 --
 
 DROP TABLE IF EXISTS `lugares`;
-CREATE TABLE IF NOT EXISTS `lugares` (
+CREATE TABLE `lugares` (
   `id` int(11) NOT NULL,
   `nombre` varchar(50) NOT NULL,
   `ubicacion` varchar(50) NOT NULL,
-  `airelibre` tinyint(1) NOT NULL,
-  PRIMARY KEY (`id`)
+  `airelibre` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -77,18 +74,154 @@ INSERT INTO `lugares` (`id`, `nombre`, `ubicacion`, `airelibre`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `metales`
+--
+
+DROP TABLE IF EXISTS `metales`;
+CREATE TABLE `metales` (
+  `idMetal` int(11) NOT NULL,
+  `fecha` date NOT NULL,
+  `asignada` tinyint(1) NOT NULL DEFAULT 0,
+  `pureza` float NOT NULL,
+  `idOro` int(11) NOT NULL,
+  `idPlata` int(11) NOT NULL,
+  `idBronce` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `participantes`
+--
+
+DROP TABLE IF EXISTS `participantes`;
+CREATE TABLE `participantes` (
+  `id` int(11) NOT NULL,
+  `dorsal` int(150) NOT NULL,
+  `calle` char(1) NOT NULL,
+  `penalizacion` tinyint(1) NOT NULL DEFAULT 0,
+  `otros` varchar(500) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `patrocinadores`
+--
+
+DROP TABLE IF EXISTS `patrocinadores`;
+CREATE TABLE `patrocinadores` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(150) NOT NULL,
+  `web` varchar(150) DEFAULT NULL,
+  `dotacion` double NOT NULL,
+  `idresponsable` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `personas`
 --
 
 DROP TABLE IF EXISTS `personas`;
-CREATE TABLE IF NOT EXISTS `personas` (
+CREATE TABLE `personas` (
   `id` int(11) NOT NULL,
   `nombre` varchar(50) NOT NULL,
   `telefono` varchar(15) DEFAULT NULL,
-  `nifnie` varchar(10) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `nifnie` (`nifnie`)
+  `nifnie` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `responsables`
+--
+
+DROP TABLE IF EXISTS `responsables`;
+CREATE TABLE `responsables` (
+  `id` int(11) NOT NULL,
+  `telefonoProf` varchar(10) NOT NULL,
+  `horarioIni` time NOT NULL,
+  `horarioFin` time NOT NULL,
+  `idpersona` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `resultados`
+--
+
+DROP TABLE IF EXISTS `resultados`;
+CREATE TABLE `resultados` (
+  `id` int(11) NOT NULL,
+  `idOro` int(11) NOT NULL,
+  `idPlata` int(11) NOT NULL,
+  `idBronce` int(11) NOT NULL,
+  `definitivo` tinyint(1) NOT NULL DEFAULT 0,
+  `fechahora` datetime DEFAULT NULL,
+  `idParticipante1` int(11) DEFAULT NULL,
+  `idParticipante2` int(11) DEFAULT NULL,
+  `idParticipante3` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `categorias`
+--
+ALTER TABLE `categorias`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `abreviatura` (`abreviatura`);
+
+--
+-- Indices de la tabla `lugares`
+--
+ALTER TABLE `lugares`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `metales`
+--
+ALTER TABLE `metales`
+  ADD PRIMARY KEY (`idMetal`);
+
+--
+-- Indices de la tabla `participantes`
+--
+ALTER TABLE `participantes`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `patrocinadores`
+--
+ALTER TABLE `patrocinadores`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `nombre` (`nombre`),
+  ADD UNIQUE KEY `idpersona` (`idresponsable`);
+
+--
+-- Indices de la tabla `personas`
+--
+ALTER TABLE `personas`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `nifnie` (`nifnie`);
+
+--
+-- Indices de la tabla `responsables`
+--
+ALTER TABLE `responsables`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `idresponsable` (`idpersona`);
+
+--
+-- Indices de la tabla `resultados`
+--
+ALTER TABLE `resultados`
+  ADD PRIMARY KEY (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
