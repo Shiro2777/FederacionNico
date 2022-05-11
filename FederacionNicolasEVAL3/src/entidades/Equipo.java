@@ -142,4 +142,9 @@ public class Equipo extends Participante {
 		return ret;
 	}
 
+	public String mostrarBasico() {
+		String ret = "";
+		ret += "equipo: " + this.idEquipo + "año: " + this.anioinscripcion;
+		return ret;
+	}
 }

@@ -142,7 +142,11 @@ public class Atleta extends Participante {
 		return "" + persona.getNombre() + " (" + persona.getNifnie().mostrar() + ") del año "
 				+ persona.getFechaNac().getYear() + "\t" + peso + "Kgs. " + altura + "m.";
 	}
-
 	
+	public String mostrarBasico() {
+		String ret = "";
+		ret += "id: " + this.idAtleta + "altura: " + this.altura;
+		return ret;
+	}
 
 }

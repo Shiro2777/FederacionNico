@@ -2,13 +2,14 @@ package entidades;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.Scanner;
 
+import dao.PatrocinadorDAO;
+import utils.ConexBD;
 import utils.Utilidades;
 import validaciones.Validaciones;
 
-public class Prueba {
+public class Prueba implements Comparable<Prueba> {
 	private long id;
 	private String nombre;
 	private LocalDate fecha; // solo fecha
@@ -18,16 +19,30 @@ public class Prueba {
 	private Colegiado[] arbitraje = new Colegiado[3];
 	private Resultado resultado = null;
 	private Participante[] participantes;
-	
-	private Patrocinador[] pt;
 
-	public Prueba(long id, String nombre, LocalDate fecha, Lugar lugar, boolean ind) {
+	/// Examen 10 Ejercicio 3
+	private Patrocinador patrocinador;
+
+	public Prueba() {
+	}
+
+	/// Examen 10 Ejercicio 3
+	public Prueba(long id, String nombre, LocalDate fecha, Lugar lugar, boolean ind, Patrocinador p) {
 		this.id = id;
 		this.nombre = nombre;
 		this.fecha = fecha;
 		this.lugar = lugar;
 		this.individual = ind;
+		this.patrocinador = p;
 	}
+
+//	public Prueba(long id, String nombre, LocalDate fecha, Lugar lugar, boolean ind) {
+//		this.id = id;
+//		this.nombre = nombre;
+//		this.fecha = fecha;
+//		this.lugar = lugar;
+//		this.individual = ind;
+//	}
 
 	public Prueba(long id, String nombre, LocalDate fecha, Lugar lugar, boolean ind, Participante[] participantes) {
 		this.id = id;
@@ -68,20 +83,6 @@ public class Prueba {
 		this.participantes = participantes;
 		this.arbitraje = arbitraje;
 		this.resultado = res;
-	}
-
-	public Prueba(long id, String nombre, LocalDate fecha, boolean individual, Lugar lugar, Colegiado[] arbitraje,
-			Resultado resultado, Participante[] participantes, Patrocinador[] pt) {
-		super();
-		this.id = id;
-		this.nombre = nombre;
-		this.fecha = fecha;
-		this.individual = individual;
-		this.lugar = lugar;
-		this.arbitraje = arbitraje;
-		this.resultado = resultado;
-		this.participantes = participantes;
-		this.pt = pt;
 	}
 
 	public Resultado getResultado() {
@@ -140,12 +141,14 @@ public class Prueba {
 		this.lugar = lugar;
 	}
 
-	public Patrocinador[] getPt() {
-		return pt;
+	/// Examen 10 Ejercicio 3
+	public Patrocinador getPatrocinador() {
+		return patrocinador;
 	}
 
-	public void setPt(Patrocinador[] pt) {
-		this.pt = pt;
+	/// Examen 10 Ejercicio 3
+	public void setPatrocinador(Patrocinador patrocinador) {
+		this.patrocinador = patrocinador;
 	}
 
 	/**
@@ -226,9 +229,9 @@ public class Prueba {
 		}
 	}
 
-	///Examen 6 Ejercicio 4
+	/// Examen 6 Ejercicio 4
 	/***
-	 * Función que devuelve una cadena de caracteres con la siguiente estructura: 
+	 * Función que devuelve una cadena de caracteres con la siguiente estructura:
 	 * <idPrueba>”. ”<nombre>” (”<fecha(dd/mm/YYYY)>” en <lugarPrueba>) de tipo “
 	 * <individual/colectiva>“ Si la prueba dispone de equipo arbitral, se mostrarán
 	 * los nombres del equipo arbitral. Además, si está cerrada, se mostrará el
@@ -242,21 +245,27 @@ public class Prueba {
 	@Override
 	public String toString() {
 		String ret = "";
-		ret += "" + id + "." + nombre + " (" + fecha.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " en " + lugar.getNombre() + ") de tipo " + (this.isIndividual()?"individual":"colectiva")+"\n";
-		if(this.hayEquipoArbitral()) {
+		ret += "" + id + "." + nombre + " (" + fecha.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " en "
+				+ lugar.getNombre() + ") de tipo " + (this.isIndividual() ? "individual" : "colectiva") +
+				// Examen 10 Ejercicio 3, parte A
+				"patrocinada por: " + this.patrocinador.getNombre() + "\n";
+		if (this.hayEquipoArbitral()) {
 			ret += this.nombresEquipoArbitral();
 		}
-		if(this.cerrada()) {
+		if (this.cerrada()) {
 			Resultado res = this.getResultado();
 			Participante[] podio = res.getPodio();
-			ret += "Primer puesto:"+ podio[0].getId()+", con el dorsal" + podio[0].getDorsal()+" por la calle "+ podio[0].getCalle()+" Oro#"+ res.getPrimero().getId()+"\n";
-			ret += "Segundo puesto:"+ podio[1].getId()+", con el dorsal" + podio[1].getDorsal()+" por la calle "+ podio[1].getCalle()+" Oro#"+ res.getSegundo().getId()+"\n";
-			ret += "Tercer puesto:"+ podio[2].getId()+", con el dorsal" + podio[2].getDorsal()+" por la calle "+ podio[2].getCalle()+" Oro#"+ res.getTercero().getId()+"\n";
+			ret += "Primer puesto:" + podio[0].getId() + ", con el dorsal" + podio[0].getDorsal() + " por la calle "
+					+ podio[0].getCalle() + " Oro#" + res.getPrimero().getId() + "\n";
+			ret += "Segundo puesto:" + podio[1].getId() + ", con el dorsal" + podio[1].getDorsal() + " por la calle "
+					+ podio[1].getCalle() + " Oro#" + res.getSegundo().getId() + "\n";
+			ret += "Tercer puesto:" + podio[2].getId() + ", con el dorsal" + podio[2].getDorsal() + " por la calle "
+					+ podio[2].getCalle() + " Oro#" + res.getTercero().getId() + "\n";
 		}
 		return ret;
 	}
 
-	// Examen 1 Ejercicio 2, parte B
+	// Examen 1 Ejercicio 3, parte A
 	public static Prueba nuevaPrueba() {
 		Prueba ret = null;
 		Scanner in;
@@ -304,9 +313,49 @@ public class Prueba {
 				valido = true;
 		} while (!valido);
 		lugar = Lugar.values()[idLugar];
-
-		ret = new Prueba(id, nombre, fecha, lugar, ind);
+		//// Examen 10 ejercicio 12
+		System.out.println("Introduzca los datos del patrocinador de la prueba");
+		System.out.println(
+				"Pulse S para introducir los datos de un nuevo patrocinador o N para elegir un patrocinador ya existente en la BD:");
+		boolean nuevoPatrocinador = Utilidades.leerBoolean();
+		Patrocinador patrocinador;
+		if (nuevoPatrocinador)
+			patrocinador = Patrocinador.nuevoPatrocinador();
+		else {
+			PatrocinadorDAO patDAO = new PatrocinadorDAO(ConexBD.getCon());
+			patrocinador = patDAO.seleccionarUnoYaExistente(); /// Examen 10 Ejercicio 12
+			ConexBD.cerrarConexion();
+		}
+		ret = new Prueba(id, nombre, fecha, lugar, ind, patrocinador);
 		return ret;
+	}
+
+	/// EXAM11 EJERCICIO2-EVAL2
+	/**
+	 * la interfaz Comparable para la clase Prueba.java, de forma que se ordenen
+	 * según su fecha, de más reciente a más antigua, y desempatar en función de si
+	 * es individual (en cuyo caso se considera anterior a una de tipo colectiva) o
+	 * por equipos. Por último, si sigue habiendo empate, deshacerlo por el valor
+	 * del campo nombre en orden alfabético creciente.
+	 */
+	@Override
+	public int compareTo(Prueba o) {
+		int ret = this.getFecha().compareTo(o.getFecha());
+		if (ret == 0) {
+			// las 2 pruebas son en las misma fecha
+			if ((this.isIndividual() && o.isIndividual()) || (!this.isIndividual() && !o.isIndividual())) {
+				// las 2 pruebas son del mismo tipo (individual o por equipos ambas)
+				ret = this.getNombre().compareToIgnoreCase(o.getNombre());
+			} else {
+				// una prueba es individual (anterior) y la otra por equipos
+				if (this.isIndividual())
+					ret = -1;
+				else
+					ret = 1;
+			}
+		}
+		return ret;
+
 	}
 
 }

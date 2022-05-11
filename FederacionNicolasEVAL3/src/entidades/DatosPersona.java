@@ -48,6 +48,10 @@ public class DatosPersona implements Comparable<DatosPersona> {
 		this.nifnie = nifnie;
 	}
 
+	public DatosPersona() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public long getId() {
 		return id;
 	}
