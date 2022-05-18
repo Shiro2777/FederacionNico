@@ -1,7 +1,6 @@
 package entidades;
 
 import java.util.Scanner;
-
 import utils.Datos;
 import utils.Utilidades;
 import validaciones.Validaciones;
@@ -10,6 +9,8 @@ public class Atleta extends Participante {
 	private long idAtleta;
 	private float altura;
 	private float peso;
+
+	private long idEquipo;
 
 	private DatosPersona persona;
 
@@ -38,6 +39,15 @@ public class Atleta extends Participante {
 		this.altura = altura;
 		this.peso = peso;
 		this.persona = dp;
+	}
+
+	public Atleta(long idAtleta, float altura, float peso, DatosPersona dp, long idEquipo) {
+		super();
+		this.idAtleta = idAtleta;
+		this.altura = altura;
+		this.peso = peso;
+		this.persona = dp;
+		this.idEquipo = idEquipo;
 	}
 
 	public Atleta(long idParticipante, Atleta a, int dorsal, char calle) {
@@ -71,7 +81,7 @@ public class Atleta extends Participante {
 	public void setPersona(DatosPersona persona) {
 		this.persona = persona;
 	}
-	
+
 	public long getIdAtleta() {
 		return idAtleta;
 	}
@@ -80,6 +90,13 @@ public class Atleta extends Participante {
 		this.idAtleta = idAtleta;
 	}
 
+	public long getIdEquipo() {
+		return idEquipo;
+	}
+
+	public void setIdEquipo(long idEquipo) {
+		this.idEquipo = idEquipo;
+	}
 
 	// Examen 5 Ejercicio 5
 	/***
@@ -140,13 +157,9 @@ public class Atleta extends Participante {
 	@Override
 	public String toString() {
 		return "" + persona.getNombre() + " (" + persona.getNifnie().mostrar() + ") del año "
-				+ persona.getFechaNac().getYear() + "\t" + peso + "Kgs. " + altura + "m.";
-	}
-	
-	public String mostrarBasico() {
-		String ret = "";
-		ret += "id: " + this.idAtleta + "altura: " + this.altura;
-		return ret;
+				+ persona.getFechaNac().getYear() + "\t\n" + Utilidades.mostrarDouble1Decimal(peso) + "Kgs. "
+				+ Utilidades.mostrarDouble2Decimales(altura) + "m.\t"
+				+ (idEquipo > 0 ? "\tidEquipo:" + idEquipo : "No pertenece a ningún equipo.");
 	}
 
 }

@@ -7,13 +7,12 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import entidades.DatosPersona;
 import entidades.NIE;
 import entidades.NIF;
 import utils.ConexBD;
 
-public class principalNico {
+public class PricipalExamen9 {
 
 	public static void main(String[] args) {
 		System.out.println("INICIO");
@@ -86,5 +85,7 @@ public class principalNico {
 			}
 		}
 		System.out.println("FIN");
+
 	}
+
 }

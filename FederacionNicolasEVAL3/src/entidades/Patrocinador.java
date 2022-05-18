@@ -1,20 +1,10 @@
 package entidades;
 
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.Scanner;
-
-import utils.ConexBD;
-import principal.PrincipalExam10;
-import utils.Datos;
-import utils.Utilidades;
+import utils.*;
 import validaciones.Validaciones;
-import entidades.DatosPersona;
 
 ///Examen 10 ejercicio 0
 public class Patrocinador implements Comparable<Patrocinador>, Serializable {
@@ -219,5 +209,4 @@ public class Patrocinador implements Comparable<Patrocinador>, Serializable {
 		return ret;
 	}
 
-	
 }

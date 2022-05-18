@@ -5,44 +5,24 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.LinkedList;
 
-import dao.AtletaDAO;
-import dao.ColegiadoDAO;
-import dao.MetalDAO;
 import dao.PatrocinadorDAO;
 import entidades.*;
-import utils.ConexBD;
-import utils.Datos;
-import utils.Utilidades;
+import utils.*;
 
-//examen
-public class PrincipalExam10 {
+public class PrincipalExamen10 {
 
 	public static void main(String[] args) {
-		MetalDAO mDAO;
-		AtletaDAO aDAO;
-		ColegiadoDAO colegDAO;
-		PatrocinadorDAO pDAO;
-		Connection c = ConexBD.establecerConexion();
-		aDAO= new AtletaDAO(c);
-		colegDAO = new ColegiadoDAO(c);
-		pDAO = new PatrocinadorDAO(c);
-		Atleta atleta1 = aDAO.buscarPorID(1);
-		
 		///Examen 10 ejercicio 8B
 		/**
-		 *  1 ALSA 		  			500.00 www.alsa.es 			1 	902422202  00:00  23:59 	1011
-			2 Ayto. Gijón 			250.00 www.gijon.es 		2 	985181105  09:00  18:00 	1012
-			3 Universidad de Oviedo	350.50 www.uniovi.es 		3 	985103000  08:30  20:00 	1013
-			4 CIFP LaLaboral	  	255.99 www.cifplalaboral.es	4	985185503  08:30  18:00 	1014
+		 *  1 ALSA 		  500.00 www.alsa.es 		1 	902422202 00:00 23:59 1011
+			2 Ayto. Gijón 250.00 www.gijon.es 		2 	985181105 09:00 18:00 1012
+			3 Universidad 350.50 www.uniovi.es 		3 	985103000 08:30 20:00 1013
+			4 CIFP La	  255.99 www.cifplalaboral.es 4 985185503 08:30 18:00 1014
 		 * */
 		//Responsable(String telefonoProf, LocalTime horarioIni, LocalTime horarioFin, DatosPersona persona)
 		Responsable r1 = new Responsable(1,"902422202", LocalTime.of(0, 0), LocalTime.of(23, 59), Datos.buscarPersonaPorId(1011)) ;
@@ -81,11 +61,13 @@ public class PrincipalExam10 {
 		System.out.println("-----------------\n");
 		
 		System.out.println("Se van a insertar en la BD los patrocinadores:");
-		if(!pDAO.insertarConID(p1)) System.out.println("Error al insertar el patrocinador: "+p1);
-		if(!pDAO.insertarConID(p2)) System.out.println("Error al insertar el patrocinador: "+p2);
-		if(!pDAO.insertarConID(p3)) System.out.println("Error al insertar el patrocinador: "+p3);
-		if(!pDAO.insertarConID(p4)) System.out.println("Error al insertar el patrocinador: "+p4);
+		PatrocinadorDAO aux = new PatrocinadorDAO(ConexBD.getCon());
+		if(!aux.insertarConID(p1)) System.out.println("Error al insertar el patrocinador: "+p1);
+		if(!aux.insertarConID(p2)) System.out.println("Error al insertar el patrocinador: "+p2);
+		if(!aux.insertarConID(p3)) System.out.println("Error al insertar el patrocinador: "+p3);
+		if(!aux.insertarConID(p4)) System.out.println("Error al insertar el patrocinador: "+p4);
 		System.out.println("Se han insertado correctamente los datos de los patrocinadores en la BD.\n");
+		ConexBD.cerrarConexion();
 		System.out.println("-----------------\n");
 		
 		System.out.println("Se van a importar responsables desde el fichero de caracteres responsables.txt");

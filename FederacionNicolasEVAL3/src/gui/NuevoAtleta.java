@@ -1,51 +1,56 @@
 package gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JButton;
+import javax.swing.border.TitledBorder;
 
-import dao.PruebaDAO;
-import dao.PatrocinadorDAO;
 import dao.AtletaDAO;
-import entidades.Atleta;
-import entidades.DatosPersona;
-import entidades.Equipo;
-import entidades.Lugar;
-import entidades.Patrocinador;
-import entidades.Prueba;
-import utils.ConexBD;
-import validaciones.Validaciones;
+import dao.EquipoDAO;
+import dao.PruebaDAO;
+
+import javax.swing.border.EtchedBorder;
+import java.awt.Color;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.SpinnerDateModel;
-import javax.swing.JRadioButton;
-import javax.swing.JSpinner;
+import javax.swing.UIManager;
 import javax.swing.JComboBox;
-import javax.swing.ComboBoxModel;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.awt.event.ActionEvent;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
+
+import entidades.Atleta;
+import entidades.DatosPersona;
+import entidades.Documentacion;
+import entidades.Equipo;
+import entidades.NIE;
+import entidades.NIF;
+import entidades.Patrocinador;
+import utils.ConexBD;
+import validaciones.Validaciones;
 
 public class NuevoAtleta extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
-	private JTextField textField_3;
-	private JTextField textField_4;
+	private JTextField textFieldPeso;
+	private JTextField textFieldAltura;
+	private JComboBox comboBoxEquipo = new JComboBox();
 
 	/**
 	 * Launch the application.
@@ -53,8 +58,21 @@ public class NuevoAtleta extends JFrame {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
+				JFrame.setDefaultLookAndFeelDecorated(true);
 				try {
-					NuevoAtleta frame = new NuevoAtleta();
+					////API JTatoo para GUI en java
+					////https://malalanayake.wordpress.com/2012/10/16/java-themes-with-jtattoo/
+					///OFICIAL: http://www.jtattoo.net/index.html
+		            UIManager.setLookAndFeel("com.jtattoo.plaf.bernstein.BernsteinLookAndFeel");
+//		            UIManager.setLookAndFeel("com.jtattoo.plaf.luna.LunaLookAndFeel");
+//		            UIManager.setLookAndFeel("com.jtattoo.plaf.graphite.GraphiteLookAndFeel");
+//		            UIManager.setLookAndFeel("com.jtattoo.plaf.texture.TextureLookAndFeel");
+		            UIManager.setLookAndFeel("com.jtattoo.plaf.hifi.HiFiLookAndFeel");
+
+		            
+		            
+		            
+		            NuevoAtleta frame = new NuevoAtleta();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -67,180 +85,278 @@ public class NuevoAtleta extends JFrame {
 	 * Create the frame.
 	 */
 	public NuevoAtleta() {
+		setTitle("Nuevo Atleta");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 402, 360);
+		setBounds(100, 100, 483, 400);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
-		JLabel lblNewLabel = new JLabel("Nombre *:");
-		lblNewLabel.setBounds(10, 46, 56, 13);
-		contentPane.add(lblNewLabel);
-		
-		textField = new JTextField();
-		textField.setBounds(76, 43, 298, 19);
-		contentPane.add(textField);
-		textField.setColumns(10);
-		
-		JLabel lblNewLabel_1 = new JLabel("<html>Seleccione la <br> opción e <br> introduzca el valor<html>");
-		lblNewLabel_1.setBounds(10, 69, 90, 48);
-		contentPane.add(lblNewLabel_1);
-		
-		JRadioButton rdbtnNewRadioButton = new JRadioButton("NIF");
-		rdbtnNewRadioButton.setBounds(106, 70, 46, 21);
-		contentPane.add(rdbtnNewRadioButton);
-		
-		JRadioButton rdbtnNie = new JRadioButton("NIE");
-		rdbtnNie.setBounds(154, 70, 46, 21);
-		contentPane.add(rdbtnNie);
-		
-		textField_1 = new JTextField();
-		textField_1.setColumns(10);
-		textField_1.setBounds(110, 98, 90, 19);
-		contentPane.add(textField_1);
-		
-		JLabel lblTelfono = new JLabel("Teléfono:");
-		lblTelfono.setBounds(10, 130, 46, 13);
-		contentPane.add(lblTelfono);
-		
-		textField_2 = new JTextField();
-		textField_2.setColumns(10);
-		textField_2.setBounds(62, 127, 90, 19);
-		contentPane.add(textField_2);
-		
-		JLabel lblFechaNacimiento = new JLabel("Fecha Nacimiento *:");
-		lblFechaNacimiento.setBounds(162, 130, 94, 13);
-		contentPane.add(lblFechaNacimiento);
-		
-		JSpinner spinner = new JSpinner();
-		spinner.setModel(new SpinnerDateModel(new Date(-315622800000L), new Date(-315622800000L), null, Calendar.DAY_OF_YEAR));
-		spinner.setBounds(263, 127, 111, 20);
-		contentPane.add(spinner);
-		
-		JLabel lblDatosPersonales = new JLabel("Datos Personales\r\n");
-		lblDatosPersonales.setBounds(10, 23, 78, 13);
-		contentPane.add(lblDatosPersonales);
-		
-		JLabel lblDatosFsicos = new JLabel("Datos Físicos\r\n");
-		lblDatosFsicos.setBounds(10, 166, 78, 13);
-		contentPane.add(lblDatosFsicos);
-		
-		JLabel lblAltura = new JLabel("Altura *:");
-		lblAltura.setBounds(10, 189, 56, 13);
-		contentPane.add(lblAltura);
-		
-		textField_3 = new JTextField();
-		textField_3.setColumns(10);
-		textField_3.setBounds(62, 186, 90, 19);
-		contentPane.add(textField_3);
-		
-		JLabel lblMenFormato = new JLabel("m. (en formato xx.xx)");
-		lblMenFormato.setBounds(157, 189, 99, 13);
-		contentPane.add(lblMenFormato);
-		
-		JLabel lblPeso = new JLabel("Peso *:");
-		lblPeso.setBounds(10, 214, 56, 13);
-		contentPane.add(lblPeso);
-		
-		textField_4 = new JTextField();
-		textField_4.setColumns(10);
-		textField_4.setBounds(62, 212, 90, 19);
-		contentPane.add(textField_4);
-		
-		JLabel lblKgenFormato = new JLabel("Kg. (en formato xx.xx)");
-		lblKgenFormato.setBounds(157, 214, 99, 13);
-		contentPane.add(lblKgenFormato);
-		
-		
-		DefaultComboBoxModel<Atleta> atletas = new DefaultComboBoxModel<Atleta>();
-		JComboBox<Atleta> comboBoxEquipos = new JComboBox<Atleta>(atletas);
-		AtletaDAO atDAO = new AtletaDAO(ConexBD.getCon());
-		ArrayList<Atleta> atletasList = (ArrayList<Atleta>) atDAO.buscarTodos();
-		for (Atleta at : atletasList)
-			comboBoxEquipos.addItem(at);
-		
-		String[] equiposStr = new String[atletasList.size()];
-		for (int i = 0; i < atletasList.size(); i++)
-			equiposStr[i] = atletasList.get(i).mostrarBasico();
-		comboBoxEquipos.setModel(new DefaultComboBoxModel(equiposStr));
 
-		comboBoxEquipos.setBounds(62, 245, 312, 22);
-		contentPane.add(comboBoxEquipos);
-		
-		JLabel lblEquipo = new JLabel("Equipo:");
-		lblEquipo.setBounds(10, 250, 56, 13);
-		contentPane.add(lblEquipo);
-		
-		JButton btnNewButton = new JButton("Aceptar");
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton buttonCancelar = new JButton("Cancelar");
+		buttonCancelar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Atleta nueva1 = new Atleta();
-				DatosPersona nueva2 = new DatosPersona();
-				boolean valido = false;
-				String titulo = "";
-				String msj = "";
-				String errores = "";
-				/// Tomar cada campo y validarlo. Si alguno no es correcto, avisar al usuario
-				String nombre = textField.getText();
-				valido = Validaciones.validarNombre(nombre);
-				if (!valido) {
-					errores += "El nombre del atleta no es válido (3-50 caracteres).\n";
-					lblNewLabel.setForeground(Color.RED);
-				} else
-					nueva2.setNombre(nombre);
-				valido = false;
-				
-				valido = !(!rdbtnNewRadioButton.isSelected() && !rdbtnNie.isSelected())
-						|| (rdbtnNewRadioButton.isSelected() && rdbtnNie.isSelected());
-				if (!valido) {
-					errores += "Debe seleccionar NIF o NIE.\n";
-					rdbtnNewRadioButton.setForeground(Color.RED);
-					rdbtnNie.setForeground(Color.RED);
-				} else {
-					nueva2.setNifnie(null); //deberias de pasar el nif o el nie no se como se hace
+				String titulo = "Cerrar ventana";
+				String msj = "¿Realmente desea cerrar la ventana?";
+				int opcion = JOptionPane.showConfirmDialog(null, msj, titulo, JOptionPane.OK_CANCEL_OPTION);
+				if (opcion == JOptionPane.YES_OPTION) {
+					/// Aqui se redirigiría al usuario hacia la pantalla principal o se saldria
+					System.exit(0); /// SALIR directamente
 				}
-				valido = false;
-				
-				//falta validar el campo donde se inserta el nif o el nie
-				
-				String telefono = textField_2.getText();
-				valido = Validaciones.validarTelefono(telefono);
-				if (!valido) {
-					errores += "El nombre del atleta no es válido (3-50 caracteres).\n";
-					lblTelfono.setForeground(Color.RED);
-				} else
-					nueva2.setTelefono(telefono);
-				valido = false;
-				
-				java.util.Date fecha = (java.util.Date) spinner.getValue();
-				valido = Validaciones.validarFechaNuevaPrueba(fecha);
-				if (!valido) {
-					errores += "La fecha de nac no es válida.\n";
-					lblFechaNacimiento.setForeground(Color.RED);
-				} else {
-					LocalDate fechaLD = LocalDate.of(fecha.getYear(), fecha.getMonth(), fecha.getDate());
-					nueva2.setFechaNac(fechaLD);
-				}
-				valido = false;
-				
-				//aqui se inserta la persona en la base de datos
-				
-				String altura = textField_3.getText();
-				// valido = Validaciones.validarAltura(altura); //habria que castearlo a un float
-				if (!valido) {
-					errores += "La altura es invalida.\n";
-					lblTelfono.setForeground(Color.RED);
-				} else
-					// nueva1.setAltura(altura);
-				valido = false;
 			}
 		});
-		btnNewButton.setBounds(76, 288, 85, 21);
-		contentPane.add(btnNewButton);
-		
-		JButton btnNewButton_1 = new JButton("Cancelar");
-		btnNewButton_1.setBounds(225, 288, 85, 21);
-		contentPane.add(btnNewButton_1);
+		buttonCancelar.setBounds(364, 327, 93, 23);
+		contentPane.add(buttonCancelar);
+
+		JPanel paneldatospersonales = new NuevaPersona();
+		paneldatospersonales.setBounds(10, 11, 447, 181);
+		contentPane.add(paneldatospersonales);
+
+		JPanel paneldatosfisicos = new JPanel();
+		paneldatosfisicos.setBorder(new TitledBorder(
+				new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)),
+				"Datos F\u00EDsicos", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
+		paneldatosfisicos.setBounds(10, 203, 447, 74);
+		contentPane.add(paneldatosfisicos);
+		paneldatosfisicos.setLayout(null);
+
+		JLabel lblAltura = new JLabel("Altura *:");
+		lblAltura.setBounds(10, 23, 68, 14);
+		paneldatosfisicos.add(lblAltura);
+
+		JLabel lblPeso = new JLabel("Peso *:");
+		lblPeso.setBounds(10, 48, 44, 14);
+		paneldatosfisicos.add(lblPeso);
+
+		textFieldPeso = new JTextField();
+		textFieldPeso.setBounds(83, 45, 57, 20);
+		paneldatosfisicos.add(textFieldPeso);
+		textFieldPeso.setColumns(10);
+
+		textFieldAltura = new JTextField();
+		textFieldAltura.setColumns(10);
+		textFieldAltura.setBounds(83, 20, 57, 20);
+		paneldatosfisicos.add(textFieldAltura);
+
+		JLabel lblNewLabel = new JLabel("m. (en formato xx.xx)");
+		lblNewLabel.setBounds(150, 23, 265, 14);
+		paneldatosfisicos.add(lblNewLabel);
+
+		JLabel lblKgs = new JLabel("Kg. (en formato xx.x)");
+		lblKgs.setBounds(150, 48, 265, 14);
+		paneldatosfisicos.add(lblKgs);
+
+		JLabel lblEquipo = new JLabel("Equipo:");
+		lblEquipo.setBounds(20, 293, 46, 14);
+		contentPane.add(lblEquipo);
+
+		EquipoDAO eqDAO = new EquipoDAO(ConexBD.getCon());
+		ArrayList<Equipo> equiposList = (ArrayList<Equipo>) eqDAO.buscarTodos();
+
+		String[] equiposStr = new String[equiposList.size() + 1];
+		equiposStr[0] = "NINGUNO";
+		for (int i = 0; i < equiposList.size(); i++)
+			equiposStr[i + 1] = equiposList.get(i).toString();
+		comboBoxEquipo.setModel(new DefaultComboBoxModel(equiposStr));
+		comboBoxEquipo.setBounds(94, 288, 299, 22);
+		contentPane.add(comboBoxEquipo);
+
+		JButton btnAceptar = new JButton("Aceptar");
+		btnAceptar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// TODO
+				Atleta nuevo = new Atleta();
+				boolean valido = false;
+				String titulo;
+				String msj;
+				String errores = "";
+
+				String nombre = ((NuevaPersona) paneldatospersonales).getTxtNombre().getText();
+				valido = Validaciones.validarNombre(nombre);
+				if (!valido)
+					errores += "\nEl nombre no es válido. Ha de estar entre 3 y 50 caracteres sin números.";
+
+				valido = false;
+				Documentacion doc;
+				boolean esnif = ((NuevaPersona) paneldatospersonales).getRbNIF().isSelected();
+				if (esnif) {
+					doc = new NIF(((NuevaPersona) paneldatospersonales).getTxtNIFNIE().getText());
+					valido = Validaciones.validarNIF((NIF) doc);
+				} else {
+					doc = new NIE(((NuevaPersona) paneldatospersonales).getTxtNIFNIE().getText());
+					valido = Validaciones.validarNIE((NIE) doc);
+				}
+				if (!valido)
+					errores += "\nEl NIF/NIE introducido no es válido.";
+
+				valido = false;
+				String telefono = ((NuevaPersona) paneldatospersonales).getTxtTelefono().getText();
+				valido = Validaciones.validarTelefono(telefono);
+				if (!valido)
+					errores += "\nEl telefono introducido no es válido. Solo acepta digitos. ";
+
+				valido = false;
+				java.util.Date fecha = (java.util.Date) ((NuevaPersona) paneldatospersonales).getSpinnerFechaNac()
+						.getValue();
+				valido = Validaciones.validarFechaNuevoAtleta(fecha);
+				LocalDate fechaLD = null;
+				if (!valido)
+					errores += "\nLa fecha ha de ser posteriore a 1/1/1960.";
+				else
+					fechaLD = LocalDate.of(fecha.getYear() + 1900, fecha.getMonth() + 1, fecha.getDate());
+				valido = false;
+				float altura = 0.0f;
+				try {
+					altura = Float.valueOf(getTextFieldAltura().getText());
+				} catch (Exception ex) {
+					System.out.println("El formato para el peso es inválido.");
+				}
+				valido = Validaciones.validarAltura(altura);
+				if (!valido)
+					errores += "\nLa altura no es válida. Formato XX.XX expresado en metros.";
+
+				valido = false;
+				float peso = 0.0f;
+				try {
+					peso = Float.valueOf(getTextFieldPeso().getText());
+				} catch (Exception ex) {
+					System.out.println("El formato para el peso es inválido.");
+				}
+				valido = Validaciones.validarPeso(peso);
+				if (!valido)
+					errores += "\nEl peso no es válido. Formato XX.X expresado en Kilogramos.";
+
+				valido = false;
+				// Recuperar El equipo desde el combobox
+				boolean perteneceAEquipo = false;
+				long idequipo = 0;
+				valido = getComboBoxEquipo().getSelectedIndex() != -1;
+				if (valido) {
+					String equipoStr = getComboBoxEquipo().getSelectedItem().toString();
+					if (!equipoStr.equals("NINGUNO")) {
+						perteneceAEquipo = true;
+						String[] aux = equipoStr.split("\\.");
+						idequipo = Long.valueOf(aux[0]);
+					}
+				} else
+					errores += "\nHay que se selecionar un valor del comboBox.";
+
+				valido = errores.isEmpty();
+				if (!valido) {
+					titulo = "ERROR: Campos inválidos";
+					msj = "ERROR: los siguientes campos del Nuevo Atleta NO son válidos:\n\n";
+					if (!errores.isEmpty())
+						msj += errores + "\n";
+					JOptionPane.showMessageDialog(null, msj, titulo, JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				if (nuevo.getPersona() == null) {
+					nuevo.setPersona(new DatosPersona(0, nombre, telefono, fechaLD, doc));
+				}
+				nuevo.getPersona().setNombre(nombre);
+				nuevo.getPersona().setNifnie(doc);
+				nuevo.getPersona().setTelefono(telefono);
+				nuevo.getPersona().setFechaNac(fechaLD);
+				nuevo.setAltura(altura);
+				nuevo.setPeso(peso);
+				nuevo.setIdEquipo(idequipo);
+
+				int opcion = JOptionPane.showConfirmDialog(null,
+						"¿Son correctos los datos del nuevo atleta?" + nuevo.toString(),
+						"Confirmar datos del nuevo atleta", JOptionPane.YES_NO_OPTION);
+				if (opcion == JOptionPane.NO_OPTION) {
+					return;
+				}
+
+				boolean exportadoOK = false;
+				/// Si todos los datos son correctos, llamar a atletaDAO para insertar en la BD
+				AtletaDAO adao = new AtletaDAO(ConexBD.establecerConexion());
+				long idatletanuevo = adao.insertarSinID(nuevo);
+				/// Tanto si la inserción de la nueva prueba tiene éxito como si no, avisar al
+				/// usuario
+				if (idatletanuevo <= 0) {
+					// hubo error al insertar en BD y no se generó la nueva prueba
+					titulo = "ERROR al insertar el Nuevo Atleta en la BD";
+					msj = "Hubo un error y NO se ha insertado el nuevo atleta en la BD.";
+					JOptionPane.showMessageDialog(null, msj, titulo, JOptionPane.ERROR_MESSAGE);
+				} else {
+					nuevo.setId(idatletanuevo);
+					titulo = "Nuevo Atleta insertado en la BD";
+					msj = "Se ha insertado correctamente el nuevo atleta:\n" + nuevo.toString();
+					JOptionPane.showMessageDialog(null, msj, titulo, JOptionPane.INFORMATION_MESSAGE);
+
+					/*
+					 * 1. El idatleta resultante tras la inserción en la tabla atletas (Long) 
+					 * 2. El nombre del atleta (String) 
+					 * 3. El NIF o NIE del atleta (Documentacion) 
+					 * 4. La fecha de nacimiento del atleta (java.time.LocalDate) 
+					 * 5. La altura del atleta (Float) 
+					 * 6. El peso del atleta (Float) 
+					 * 7. El teléfono del atleta (String) 
+					 * 8. El idpersona resultante tras la inserción en la tabla personas (Long)
+					 */
+					File f = new File(""+nuevo.getPersona().getNifnie().mostrar()+".dat");
+					FileOutputStream fo;
+					try {
+							fo = new FileOutputStream(f);
+							ObjectOutputStream oos = new ObjectOutputStream(fo);
+							oos.writeLong(idatletanuevo);
+							oos.writeUTF(nuevo.getPersona().getNombre());
+							oos.writeObject((Documentacion)nuevo.getPersona().getNifnie());
+							oos.writeObject((LocalDate)nuevo.getPersona().getFechaNac());
+							oos.writeFloat(nuevo.getAltura());
+							oos.writeFloat(nuevo.getPeso());
+							oos.writeUTF(telefono);
+							oos.writeLong(nuevo.getPersona().getId());
+							oos.flush();
+							oos.close();
+							fo.close();
+							titulo = "Nuevo Atleta exportado a fichero";
+							msj = "Se ha exportado correctamente el nuevo atleta al fichero " + f.getName();
+							JOptionPane.showMessageDialog(null, msj, titulo, JOptionPane.INFORMATION_MESSAGE);
+							/// Aqui se redirigiría al usuario hacia la pantalla principal
+							/// TODO
+							System.out.println("Se han exportado los datos del nuevo Atleta al fichero "+f.getName());
+					} catch (FileNotFoundException exc) {
+						System.out.println("Se ha producido una FileNotFoundException:" + exc.getMessage());
+						exc.printStackTrace();
+					} catch (IOException ex) {
+						System.out.println("Se ha producido una IOException:" + ex.getMessage());
+						ex.printStackTrace();
+					}
+
+				}
+				ConexBD.cerrarConexion();
+				/// Aqui se redirigiría al usuario hacia la pantalla principal
+				/// TODO
+			}
+		});
+		btnAceptar.setBounds(270, 327, 89, 23);
+		contentPane.add(btnAceptar);
 	}
+
+	public JTextField getTextFieldPeso() {
+		return textFieldPeso;
+	}
+
+	public void setTextFieldPeso(JTextField textFieldPeso) {
+		this.textFieldPeso = textFieldPeso;
+	}
+
+	public JTextField getTextFieldAltura() {
+		return textFieldAltura;
+	}
+
+	public void setTextFieldAltura(JTextField textFieldAltura) {
+		this.textFieldAltura = textFieldAltura;
+	}
+
+	public JComboBox getComboBoxEquipo() {
+		return comboBoxEquipo;
+	}
+
+	public void setComboBoxEquipo(JComboBox comboBoxEquipo) {
+		this.comboBoxEquipo = comboBoxEquipo;
+	}
+
 }

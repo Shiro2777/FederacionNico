@@ -266,6 +266,7 @@ public class Validaciones {
 	 */
 	public static boolean validarTiempo(Tiempo t) {
 		boolean ret = false;
+		
 
 		if (t.getHoras() == 0)
 			if (t.getMinutos() == 0)
@@ -308,6 +309,11 @@ public class Validaciones {
 		java.util.Date hoyMas1Mes = new Date(hoyMas1MesLD.getYear() - 1900, hoyMas1MesLD.getMonthValue() - 1, hoyMas1MesLD.getDayOfMonth());
 		return fecha.after(hoyMas1Mes);
 		
+	}
+
+	public static boolean validarFechaNuevoAtleta(Date fecha) {
+		Date min = new Date(1960-1900, 1, 1);
+		return fecha.after(min);
 	}
 
 }

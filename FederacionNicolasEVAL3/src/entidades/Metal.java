@@ -39,4 +39,10 @@ public abstract class Metal {
 	public void setIdMetal(long idMetal) {
 		this.idMetal = idMetal;
 	}
+	@Override
+	public String toString() {
+		return "Metal [idMetal=" + idMetal + ", fecha=" + fecha + ", asignada=" + asignada + "]";
+	}
+	
+	
 }

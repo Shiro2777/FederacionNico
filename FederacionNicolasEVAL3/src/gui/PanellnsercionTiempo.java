@@ -10,7 +10,7 @@ import javax.swing.SpinnerNumberModel;
 import java.awt.Font;
 
 ///Examen 11 Ejercicio 1-EVAL3
-public class PanelInsercionTiempo extends JPanel {
+public class PanellnsercionTiempo extends JPanel {
 
 	/**
 	 * 
@@ -20,7 +20,7 @@ public class PanelInsercionTiempo extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public PanelInsercionTiempo() {
+	public PanellnsercionTiempo() {
 		setFont(new Font("Wide Latin", Font.BOLD, 11));
 		setBorder(new TitledBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(255, 255, 255), new Color(160, 160, 160)), "Introduzca el Tiempo", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)), "Introduzca el Tiempo", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		setBackground(Color.LIGHT_GRAY);

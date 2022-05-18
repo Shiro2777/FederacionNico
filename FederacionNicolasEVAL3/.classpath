@@ -8,5 +8,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/peruj/Downloads/federacion-main (1)/federacion-main/Federacion_SOL/libs/mysql-connector-java-8.0.26.jar"/>
 	<classpathentry kind="lib" path="C:/Users/peruj/Downloads/federacion-main (1)/federacion-main/Federacion_SOL/libs/valnif.jar"/>
+	<classpathentry kind="lib" path="C:/Users/peruj/Downloads/JTattoo-1.6.13.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
